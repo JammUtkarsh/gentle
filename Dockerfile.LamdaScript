@@ -1,0 +1,41 @@
+# Same image as original Dockerfile lowquality/gentle
+FROM python:3.9-slim
+
+# Setting the working directory
+WORKDIR /gentle
+
+# Installing the dependencies
+RUN apt-get update -y && apt install -y --no-install-recommends \ 
+        autoconf automake curl ffmpeg g++ gcc gfortran git libatlas3-base\
+        libc++-dev libtool make patch bzip2\
+        python2.7 python3 python3-dev python3-pip\
+        sox subversion unzip wget zlib1g-dev && \
+        apt-get clean
+
+# Copying files
+COPY . .
+
+# Boosting the build speed by using 10 cores; Remove this if you are not using a powerful machine
+ARG MAKEFLAG=' -j1'
+ENV MAKEFLAGS=$MAKEFLAG
+
+# Running the installation scripts
+RUN ./install.sh
+
+# Installing the AWS Lambda Runtime Interface Emulator
+RUN curl -Lo /usr/local/bin/aws-lambda-rie \
+        https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie && \
+        chmod +x /usr/local/bin/aws-lambda-rie && \
+        pip install awslambdaric
+
+# Copying the app to lower the time cost of building the image if changes are made to the app.py
+COPY app.py ${LAMBDA_TASK_ROOT}
+
+# removing unecessary files to reduce the size of the image
+RUN ./remove_excess.sh
+
+# Setting the entry point
+ENTRYPOINT [ "/gentle/entry_script.sh" ]
+
+# Running the Lambda Function
+CMD [ "app.handler" ]

@@ -20,18 +20,23 @@ RUN apt-get update -y && apt install -y --no-install-recommends \
 # Copying files
 COPY . .
 
-# Boosting the build speed by using 10 cores; Remove this if you are not using a powerful machine
-ARG MAKEFLAG=' -j1'
-ENV MAKEFLAGS=$MAKEFLAG
-
 # Running the installation scripts
 RUN ./install.sh
+
+# Installing the AWS Lambda Runtime Interface Emulator
+RUN curl -Lo /usr/local/bin/aws-lambda-rie \
+        https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie && \
+        chmod +x /usr/local/bin/aws-lambda-rie && \
+        pip install awslambdaric
+
+# Copying the app to lower the time cost of building the image if changes are made to the app.py
+COPY app.py ${LAMBDA_TASK_ROOT}
 
 # removing unecessary files to reduce the size of the image
 RUN ./remove_excess.sh
 
-EXPOSE 8765
+# Setting the entry point
+ENTRYPOINT [ "/gentle/entry_script.sh" ]
 
-VOLUME /gentle/webdata
-
-CMD python3 /gentle/serve.py
+# Running the Lambda Function
+CMD [ "app.handler" ]
