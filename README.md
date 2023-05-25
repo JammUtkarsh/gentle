@@ -1,7 +1,10 @@
 # Gentle
+
 **Robust yet lenient forced-aligner built on Kaldi. A tool for aligning speech with text.**
 
 ## Getting Started
+
+>This project is a fork for an assignment. Read [TASK.md](/TASK.md) for a detailed summery.
 
 There are three ways to install Gentle.
 
@@ -13,7 +16,7 @@ There are three ways to install Gentle.
 
 ## Using Gentle
 
-By default, the aligner listens at http://localhost:8765. That page has a graphical interface for transcribing audio, viewing results, and downloading data.
+By default, the aligner listens at <http://localhost:8765>. That page has a graphical interface for transcribing audio, viewing results, and downloading data.
 
 There is also a REST API so you can use Gentle in your programs. Here's an example of how to use the API with CURL:
 

@@ -4,4 +4,5 @@
 (./install_models.sh) && echo "Models installed" && \
 (cd ext/kaldi/tools && extras/install_mkl.sh && ./extras/check_dependencies.sh && make && make clean) && echo "Kaldi tools installed" && \
 (cd ext/kaldi/src && ./configure --static --static-math=yes --static-fst=yes --use-cuda=no && make depend && make && make clean) && echo "Kaldi src installed" && \
+( cd /gentle && python3 setup.py develop)
 (cd ext && make depend && make)
